@@ -1,5 +1,7 @@
 # 疯狂猜词 (Crazy Word Guess)
 
+[English](README.en.md) | 中文
+
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20Android%20%7C%20Web-lightgrey.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
@@ -7,7 +9,7 @@
 一款基于React Native与Expo构建的多人派对游戏应用，支持多种主题和难度的词语猜测游戏。
 
 <p align="center">
-  <img src="screenshots/game_preview.png" alt="游戏预览" width="300"/>
+  <img src="screenshots/welcome_screen.png" alt="游戏预览" width="300"/>
 </p>
 
 ## 📖 项目简介
@@ -22,6 +24,7 @@
 - **游戏控制** - 支持暂停/继续，可中途结束查看结果
 - **成绩统计** - 详细记录正确/错误词语列表
 - **排行系统** - 支持本地与在线排行榜，记录个人最佳成绩
+- **多语言支持** - 支持中英文界面切换
 
 ## 🛠️ 技术架构
 
@@ -141,6 +144,11 @@ expo build:android
   - 词库总量扩充至400+
   - 新增流行语与网络梗词库
   - 实现基于主题的词库过滤
+  
+- **语言支持**:
+  - 增加英语界面支持
+  - 在欢迎界面添加语言切换功能
+  - 记忆用户语言偏好设置
 
 ## 🤝 参与贡献
 
