@@ -1,12 +1,13 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, ScrollView, TextInput, ActivityIndicator, Alert, Platform } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, ScrollView, TextInput, ActivityIndicator, Alert, Platform, Switch } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CardStyleInterpolators } from '@react-navigation/stack';
 
 // 定义排行榜记录类型
 type LeaderboardRecord = {
@@ -17,10 +18,123 @@ type LeaderboardRecord = {
 };
 
 const LEADERBOARD_STORAGE_KEY = '@crazy_word_guess_leaderboard';
+const LANGUAGE_STORAGE_KEY = '@crazy_word_guess_language';
+
+// 语言定义
+const translations = {
+  zh: {
+    appTitle: '疯狂猜词',
+    subtitle: '一起来玩吧！',
+    startGame: '开始游戏',
+    rules: '规则说明',
+    leaderboard: '查看排行榜',
+    languageToggle: '中 / EN',
+    timeSettings: '时间设置',
+    difficultySettings: '词库难度',
+    themeSettings: '词库主题',
+    random: '随机',
+    basic: '基础',
+    advanced: '进阶',
+    allThemes: '全部',
+    daily: '日常',
+    tech: '科技',
+    literature: '文学',
+    back: '返回',
+    seconds: '秒',
+    gameRules: '游戏规则',
+    rulesList: [
+      '游戏需要至少两名玩家参与，一人拿设备，其他人描述。',
+      '拿设备的玩家看不到屏幕，其他玩家通过语言描述帮助猜词。',
+      '描述时不能直接说出词语本身或包含的字。',
+      '猜对一个词得1分，猜错不扣分。',
+      '时间结束后，统计总分，得分最高者获胜。'
+    ]
+  },
+  en: {
+    appTitle: 'Crazy Word Guess',
+    subtitle: 'Let\'s play together!',
+    startGame: 'Start Game',
+    rules: 'Game Rules',
+    leaderboard: 'Leaderboard',
+    languageToggle: 'EN / 中',
+    timeSettings: 'Time Settings',
+    difficultySettings: 'Difficulty',
+    themeSettings: 'Word Theme',
+    random: 'Random',
+    basic: 'Basic',
+    advanced: 'Advanced',
+    allThemes: 'All',
+    daily: 'Daily',
+    tech: 'Tech',
+    literature: 'Literature',
+    back: 'Back',
+    seconds: 'sec',
+    gameRules: 'Game Rules',
+    rulesList: [
+      'The game requires at least two players: one holds the device while others describe.',
+      'The player holding the device cannot see the screen, others help by describing the word.',
+      'When describing, you cannot directly say the word or its characters.',
+      'Score 1 point for each correct guess, no deduction for wrong guesses.',
+      'After time ends, the player with the highest score wins.'
+    ]
+  }
+};
+
+// 创建语言上下文
+const LanguageContext = React.createContext({
+  language: 'zh',
+  t: translations.zh,
+  toggleLanguage: () => {}
+});
+
+// 语言Provider组件
+const LanguageProvider = ({ children }: any) => {
+  const [language, setLanguage] = React.useState('zh');
+  const [t, setT] = React.useState(translations.zh);
+
+  React.useEffect(() => {
+    // 从存储中加载语言设置
+    const loadLanguage = async () => {
+      try {
+        const savedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
+        if (savedLanguage) {
+          setLanguage(savedLanguage);
+          setT(savedLanguage === 'zh' ? translations.zh : translations.en);
+        }
+      } catch (e) {
+        console.error('Failed to load language setting', e);
+      }
+    };
+    
+    loadLanguage();
+  }, []);
+
+  const toggleLanguage = async () => {
+    const newLanguage = language === 'zh' ? 'en' : 'zh';
+    setLanguage(newLanguage);
+    setT(newLanguage === 'zh' ? translations.zh : translations.en);
+    
+    try {
+      await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, newLanguage);
+    } catch (e) {
+      console.error('Failed to save language setting', e);
+    }
+  };
+
+  return (
+    <LanguageContext.Provider value={{ language, t, toggleLanguage }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+};
+
+// Hook使用语言上下文
+const useLanguage = () => React.useContext(LanguageContext);
 
 // 欢迎页面组件
 const WelcomeScreen = ({ navigation }: any) => {
   const insets = useSafeAreaInsets();
+  const { t, toggleLanguage } = useLanguage();
   
   return (
     <LinearGradient
@@ -30,26 +144,33 @@ const WelcomeScreen = ({ navigation }: any) => {
       end={{ x: 1, y: 1 }}
     >
       <SafeAreaView style={[styles.safeAreaContainer, { paddingTop: insets.top }]}>
-        <Text style={styles.title}>疯狂猜词</Text>
-        <Text style={styles.subtitle}>一起来玩吧！</Text>
+        <TouchableOpacity 
+          style={styles.languageToggle}
+          onPress={toggleLanguage}
+        >
+          <Text style={styles.languageToggleText}>{t.languageToggle}</Text>
+        </TouchableOpacity>
+        
+        <Text style={styles.title}>{t.appTitle}</Text>
+        <Text style={styles.subtitle}>{t.subtitle}</Text>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: 'rgba(243, 156, 18, 0.9)' }]}
             onPress={() => navigation.navigate('Settings')}
           >
-            <Text style={styles.buttonText}>开始游戏</Text>
+            <Text style={styles.buttonText}>{t.startGame}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: 'rgba(52, 152, 219, 0.9)' }]}
             onPress={() => navigation.navigate('Rules')}
           >
-            <Text style={styles.buttonText}>规则说明</Text>
+            <Text style={styles.buttonText}>{t.rules}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: 'rgba(155, 89, 182, 0.9)' }]}
             onPress={() => navigation.navigate('Leaderboard')}
           >
-            <Text style={styles.buttonText}>查看排行榜</Text>
+            <Text style={styles.buttonText}>{t.leaderboard}</Text>
           </TouchableOpacity>
         </View>
         <StatusBar style="light" />
@@ -1054,22 +1175,25 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Welcome"
-          screenOptions={{
-            headerShown: false,
-            gestureEnabled: false, // 禁用手势返回功能，避免导航问题
-          }}
-        >
-          <Stack.Screen name="Welcome" component={WelcomeScreen} />
-          <Stack.Screen name="Rules" component={RulesScreen} options={{ gestureEnabled: true }} />
-          <Stack.Screen name="Settings" component={SettingsScreen} options={{ gestureEnabled: true }} />
-          <Stack.Screen name="Game" component={GameScreen} />
-          <Stack.Screen name="Result" component={ResultScreen} />
-          <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <LanguageProvider>
+        <NavigationContainer>
+          <Stack.Navigator 
+            initialRouteName="Welcome" 
+            screenOptions={{ 
+              headerShown: false,
+              cardStyle: { backgroundColor: 'transparent' },
+              cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+            }}
+          >
+            <Stack.Screen name="Welcome" component={WelcomeScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="Game" component={GameScreen} />
+            <Stack.Screen name="Rules" component={RulesScreen} />
+            <Stack.Screen name="Result" component={ResultScreen} />
+            <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </LanguageProvider>
     </SafeAreaProvider>
   );
 }
@@ -1529,5 +1653,19 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  languageToggle: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    padding: 10,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    zIndex: 10,
+  },
+  languageToggleText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ffffff',
   },
 });
