@@ -34,36 +34,22 @@
 
 ## 📱 应用截图
 
-> **注意**: 项目 `screenshots` 目录已准备好接收应用截图。请使用以下方法获取并添加截图:
-
-### 如何添加截图
-
-1. **运行应用**:
-   ```bash
-   npx expo start
-   ```
-
-2. **使用 Expo Go 应用**:
-   - 在手机上安装 Expo Go
-   - 扫描二维码打开应用
-
-3. **获取以下页面截图**:
-   - 欢迎页面 (`welcome_screen.png`)
-   - 设置页面 (`settings_screen.png`)
-   - 游戏页面 (`gameplay_screen.png`)
-   - 结果页面 (`results_screen.png`)
-   - 排行榜页面 (`leaderboard_screen.png`)
-
-4. **添加到项目**:
-   - 将截图放到 `screenshots` 目录
-   - 确保图片名称与上面建议的一致
-   - 截图将自动在README中显示
+以下是游戏的主要界面截图：
 
 <p align="center">
   <img src="screenshots/welcome_screen.png" alt="欢迎页面" width="200"/>
   <img src="screenshots/settings_screen.png" alt="设置页面" width="200"/>
   <img src="screenshots/gameplay_screen.png" alt="游戏页面" width="200"/>
+</p>
+
+<p align="center">
   <img src="screenshots/results_screen.png" alt="结果页面" width="200"/>
+  <img src="screenshots/rules_screen.png" alt="规则页面" width="200"/>
+</p>
+
+<p align="center">
+  <img src="screenshots/leaderboard_local_screen.png" alt="本地排行榜" width="200"/>
+  <img src="screenshots/leaderboard_global_screen.png" alt="全球排行榜" width="200"/>
 </p>
 
 ### 游戏主要界面
@@ -74,7 +60,8 @@
 - **设置页面**: 可选择游戏时长(30/60/90秒)、词库难度(随机/基础/进阶)和词库主题
 - **游戏页面**: 显示当前词语、计时器、分数，以及"正确"、"跳过"按钮
 - **结果页面**: 展示本局游戏得分、正确/错误词语列表，以及保存成绩选项
-- **排行榜页面**: 显示历史最佳成绩与全球排名
+- **规则页面**: 详细说明游戏规则与玩法
+- **排行榜页面**: 支持查看本地和全球最佳成绩排名
 
 ## 🚀 快速开始
 
